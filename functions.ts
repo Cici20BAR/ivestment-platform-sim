@@ -53,3 +53,15 @@ export function simulateInvestment(p: InvestmentParams): SimulationResult {
         breakEvenMonth: breakEven
     }
 }
+export function economicScenarios(s: InvestmentParams) {
+    return {
+        // pessimistic: lower rate a bit, use ... to copy s so we don't change the original
+        pessimist: simulateInvestment({ ...s, annualRate: s.annualRate - 0.03 }),
+
+        // realistic: just use the base values
+        realist: simulateInvestment(s),
+
+        // optimistic: bump the rate up a bit, copy s again for safety
+        optimist: simulateInvestment({ ...s, annualRate: s.annualRate + 0.03 })
+    }
+}
