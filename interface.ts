@@ -1,10 +1,10 @@
 export interface  InvestmentParams{
     initial: number;
-    anualRate: number;
+    annualRate: number;
     years: number;
     monthlyContribution: number;
     inflation: number;
-    taxrate?:number;
+    taxRate?:number;
 
 }
 export interface SimulationResult{
