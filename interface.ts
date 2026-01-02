@@ -11,7 +11,10 @@ export interface SimulationResult{
     history: number[]
     invested: number
     finalValue: number
-    profit: number
+    grossProfit : number
+    netProfit:number
+    tax: number
+    profitNet: number
     roi: number
     breakEvenMonth: number | null
 }
