@@ -53,6 +53,7 @@ export function simulateInvestment(p: InvestmentParams): SimulationResult {
         breakEvenMonth: breakEven
     }
 }
+//for montecarlo
 export function economicScenarios(s: InvestmentParams) {
     return {
         // pessimistic: lower rate a bit, use ... to copy s so we don't change the original
