@@ -66,3 +66,24 @@ export function economicScenarios(s: InvestmentParams) {
         optimist: simulateInvestment({ ...s, annualRate: s.annualRate + 0.03 })
     }
 }
+export function monteCarlo(
+    runs:number,
+    rateMin: number,
+    rateMax: number,
+    mont:Omit<InvestmentParams, "annualRate">//we omit annual rate because we calculate it with a random func
+){
+    const results:number[] = [];
+    for(let i=0; i<runs; i++) {
+        const rate=rateMin+Math.random()*(rateMax - rateMin);
+        const sim_res=simulateInvestment({...mont,annualRate:rate});
+
+        results.push(sim_res.finalValue);
+
+    }
+    return {
+        min:Math.min(...results),
+        max:Math.max(...results),
+        avg:results.reduce((a,b)=>a+b,0)/runs
+    }
+
+}
