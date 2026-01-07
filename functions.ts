@@ -113,7 +113,7 @@ export  function  exportCsv(
     const rows:string[] = []
     const months = sim.history.length
 
-    rows.push("Month,Value,Invested,GrossProfit,Tax,NetProfit")
+    rows.push("Luna,Valoare,Invwstie,ProfitBrut,Taxe,ProftNet")
 
     const  investedPerMonth=    sim.invested/months
     sim.history.forEach((value,index)=>{
@@ -131,3 +131,20 @@ export  function  exportCsv(
     fs.writeFileSync(file, rows.join("\n"))
 
 }
+export function printTextChart(
+    sim: SimulationResult,
+    useNetProfit: boolean = false
+) {
+    console.log("Evolutie pe ani:")
+    for (let i = 1; i <= sim.history.length; i++) {
+        if (i % 12 === 0) {
+            const year = i / 12
+            const value = sim.history[i - 1]   // index 0-based
+            const profit = useNetProfit
+                ? value - sim.invested - sim.tax
+                : value - sim.invested
+            console.log(`An ${year}: ${value.toFixed(0)} RON (+${profit.toFixed(0)} dobândă)`)
+        }
+    }
+}
+
