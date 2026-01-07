@@ -1,8 +1,8 @@
 import { InvestmentParams, SimulationResult } from "./interface"
 
-// =====================
+
 // SIMULARE INVESTIȚIE
-// =====================
+
 export function simulateInvestment(p: InvestmentParams): SimulationResult {
     const months = p.years * 12
     const monthlyRate = p.annualRate / 12
@@ -17,6 +17,10 @@ export function simulateInvestment(p: InvestmentParams): SimulationResult {
         portfolioValue *= 1 + monthlyRate       // apply monthly interest
         portfolioValue += p.monthlyContribution // add monthly contribution
         totalInvested += p.monthlyContribution
+        if ((p as any).annualContribution && m % 12 === 0) {//for annual contribution,used any because I do not have it in the interface
+            portfolioValue += (p as any).annualContribution
+            totalInvested += (p as any).annualContribution
+        }
 
         portfolioValue /= 1 + monthlyInflation  // adjust for inflation
 
@@ -50,9 +54,8 @@ export function simulateInvestment(p: InvestmentParams): SimulationResult {
     }
 }
 
-// =====================
+
 // SCENARII ECONOMICE
-// =====================
 export function economicScenarios(s: InvestmentParams) {
     return {
         // pessimistic: lower rate a bit, copy s to avoid mutation
@@ -64,9 +67,7 @@ export function economicScenarios(s: InvestmentParams) {
     }
 }
 
-// =====================
 // MONTE CARLO
-// =====================
 export function monteCarlo(
     runs: number,
     rateMin: number,
@@ -87,7 +88,7 @@ export function monteCarlo(
         avg: results.reduce((a, b) => a + b, 0) / runs
     }
 }
-
+//comp rates
 export function compareRates(
     rates:number[],
     base: Omit<InvestmentParams, "annualRate">
