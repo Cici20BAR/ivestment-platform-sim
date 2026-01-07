@@ -1,7 +1,8 @@
 import { InvestmentParams, SimulationResult } from "./interface"
+import * as fs from "fs"
 
 
-// SIMULARE INVESTIȚIE
+// SIMULAte  INV
 
 export function simulateInvestment(p: InvestmentParams): SimulationResult {
     const months = p.years * 12
@@ -103,4 +104,30 @@ export function compareRates(
             roi: simulate.roi
         }
     })
+}
+export  function  exportCsv(
+    file:string,
+    sim:SimulationResult
+
+){
+    const rows:string[] = []
+    const months = sim.history.length
+
+    rows.push("Month,Value,Invested,GrossProfit,Tax,NetProfit")
+
+    const  investedPerMonth=    sim.invested/months
+    sim.history.forEach((value,index)=>{
+
+            const invested = investedPerMonth * (index + 1)
+            const grossProfit = value - invested
+            const tax = sim.tax > 0 && grossProfit > 0 ? grossProfit * (sim.tax / sim.netProfit) : 0
+            const netProfit = grossProfit - tax
+
+
+        rows.push(
+            `${index + 1},${value.toFixed(2)},${invested.toFixed(2)},${grossProfit.toFixed(2)},${tax.toFixed(2)},${netProfit.toFixed(2)}`
+        )
+    })
+    fs.writeFileSync(file, rows.join("\n"))
+
 }
