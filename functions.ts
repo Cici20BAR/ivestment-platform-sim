@@ -99,6 +99,8 @@ export function compareRates(
         const simulate=simulateInvestment({ ...base, annualRate: rate })
         return{
             rate,
+            grossProfit:simulate.grossProfit,
+            tax:simulate.tax,
             finalValue: simulate.finalValue,
             profit: simulate.netProfit,
             roi: simulate.roi
