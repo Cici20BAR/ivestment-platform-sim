@@ -88,3 +88,18 @@ export function monteCarlo(
     }
 }
 
+export function compareRates(
+    rates:number[],
+    base: Omit<InvestmentParams, "annualRate">
+
+){
+    return rates.map(rate=>{
+        const simulate=simulateInvestment({ ...base, annualRate: rate })
+        return{
+            rate,
+            finalValue: simulate.finalValue,
+            profit: simulate.netProfit,
+            roi: simulate.roi
+        }
+    })
+}
