@@ -25,7 +25,7 @@ const  params:InvestmentParams={
     taxRate:getArgs("--taxes")?Number(getArgs("--taxes")):undefined//optional
 }
 if (getArgs("--annual")){
-    (params as any).anualContribution=Number(getArgs("--annual"));
+    (params as any).anualContribution = Number(getArgs("--annual"));
 
 }// New feature implemented without modifying the interfaces
 //could not decide if chart should be with or without taxes so i did both
@@ -103,7 +103,7 @@ if (args.includes("--montecarlo")) {
         process.exit(1)
     }
     const [min, max] = range.split("-").map(r => Number(r.trim()))
-    const res = monteCarlo(runs, min, max, { ...params, annualRate: 0 })
+    const res = monteCarlo(runs, min, max, { ...params })
     console.log(`\nMonte Carlo (${runs} simulari, rate ${min}-${max}):`)
     console.log(` Min: ${res.min.toLocaleString()} RON`)
     console.log(` Max: ${res.max.toLocaleString()} RON`)
