@@ -85,4 +85,28 @@ if (!args.includes("--compare") && !args.includes("--scenarios") && !args.includ
         })
     }
 
+if (args.includes("--scenarios")) {
+    const sims = economicScenarios(params)
+    console.log("\nScenarii economice:")
+    for (const [key, sim] of Object.entries(sims)) {
+        console.log(`${key.charAt(0).toUpperCase() + key.slice(1)}: ${sim.finalValue.toLocaleString()} RON`)
+        if (showChart) printTextChart(sim, chartNet)
+    }
+}
+
+//  Monte Carlo
+if (args.includes("--montecarlo")) {
+    const runs = Number(getArgs("--runs") || 1000)
+    const range = getArgs("--rate_range")
+    if (!range) {
+        console.error("Trebuie sa specifici --rate_range MIN-MAX")
+        process.exit(1)
+    }
+    const [min, max] = range.split("-").map(r => Number(r.trim()))
+    const res = monteCarlo(runs, min, max, { ...params, annualRate: 0 })
+    console.log(`\nMonte Carlo (${runs} simulari, rate ${min}-${max}):`)
+    console.log(` Min: ${res.min.toLocaleString()} RON`)
+    console.log(` Max: ${res.max.toLocaleString()} RON`)
+    console.log(` Avg: ${res.avg.toLocaleString()} RON`)
+}
 
