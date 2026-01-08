@@ -17,4 +17,14 @@ export interface SimulationResult{
     profitNet: number
     roi: number
     breakEvenMonth: number | null
+    yearlySnapshots?: YearSnapshot[]
+
+}
+export interface YearSnapshot {
+    year: number
+    value: number
+    invested: number
+    grossProfit: number
+    tax: number
+    netProfit: number
 }

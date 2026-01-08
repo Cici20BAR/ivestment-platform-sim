@@ -1,45 +1,60 @@
-import { InvestmentParams, SimulationResult } from "./interface"
-import * as fs from "fs"
-
-
-// SIMULAte  INV
+import { InvestmentParams, SimulationResult, YearSnapshot } from "./interface"
+import fs from "fs"
 
 export function simulateInvestment(p: InvestmentParams): SimulationResult {
     const months = p.years * 12
     const monthlyRate = p.annualRate / 12
     const monthlyInflation = p.inflation / 12
 
-    let portfolioValue = p.initial           // total value of the investment
-    let totalInvested = p.initial            // total invested (principal + contributions)
+    let portfolioValue = p.initial
+    let totalInvested = p.initial
     let breakEvenMonth: number | null = null
+
     const history: number[] = []
+    const yearlySnapshots: YearSnapshot[] = []
 
     for (let m = 1; m <= months; m++) {
-        portfolioValue *= 1 + monthlyRate       // apply monthly interest
-        portfolioValue += p.monthlyContribution // add monthly contribution
+        portfolioValue *= 1 + monthlyRate
+        portfolioValue += p.monthlyContribution
         totalInvested += p.monthlyContribution
-        if ((p as any).annualContribution && m % 12 === 0) {//for annual contribution,used any because I do not have it in the interface
+
+        if ((p as any).annualContribution && m % 12 === 0) {
             portfolioValue += (p as any).annualContribution
             totalInvested += (p as any).annualContribution
         }
 
-        portfolioValue /= 1 + monthlyInflation  // adjust for inflation
+        portfolioValue /= 1 + monthlyInflation
 
         if (breakEvenMonth === null && portfolioValue >= totalInvested) {
             breakEvenMonth = m
         }
 
         history.push(portfolioValue)
+
+        if (m % 12 === 0) {
+            const year = m / 12
+            const grossProfit = portfolioValue - totalInvested
+            const tax = p.taxRate && grossProfit > 0 ? grossProfit * p.taxRate : 0
+            const netProfit = grossProfit - tax
+
+            yearlySnapshots.push({
+                year,
+                value: portfolioValue,
+                invested: totalInvested,
+                grossProfit,
+                tax,
+                netProfit
+            })
+        }
     }
 
-    // Profit calculations
-    const grossProfit = portfolioValue - totalInvested    // before taxes
+    const grossProfit = portfolioValue - totalInvested
     let tax = 0
     let netProfit = grossProfit
     if (p.taxRate && grossProfit > 0) {
         tax = grossProfit * p.taxRate
         netProfit = grossProfit - tax
-        portfolioValue = totalInvested + netProfit       // final value after tax
+        portfolioValue = totalInvested + netProfit
     }
 
     return {
@@ -51,30 +66,20 @@ export function simulateInvestment(p: InvestmentParams): SimulationResult {
         tax,
         profitNet: netProfit,
         roi: netProfit / totalInvested,
-        breakEvenMonth
+        breakEvenMonth,
+        yearlySnapshots
     }
 }
 
-
-// SCENARII ECONOMICE
 export function economicScenarios(s: InvestmentParams) {
     return {
-        // pessimistic: lower rate a bit, copy s to avoid mutation
         pessimist: simulateInvestment({ ...s, annualRate: s.annualRate - 0.03 }),
-        // realistic: base parameters
         realist: simulateInvestment(s),
-        // optimistic: increase rate a bit
         optimist: simulateInvestment({ ...s, annualRate: s.annualRate + 0.03 })
     }
 }
 
-// MONTE CARLO
-export function monteCarlo(
-    runs: number,
-    rateMin: number,
-    rateMax: number,
-    base: Omit<InvestmentParams, "annualRate"> // rate will be random
-) {
+export function monteCarlo(runs: number, rateMin: number, rateMax: number, base: Omit<InvestmentParams, "annualRate">) {
     const results: number[] = []
 
     for (let i = 0; i < runs; i++) {
@@ -89,64 +94,39 @@ export function monteCarlo(
         avg: results.reduce((a, b) => a + b, 0) / runs
     }
 }
-//comp rates
-export function compareRates(
-    rates:number[],
-    base: Omit<InvestmentParams, "annualRate">
 
-){
-    return rates.map(rate=>{
-        const simulate=simulateInvestment({ ...base, annualRate: rate })
-        return{
+export function compareRates(rates: number[], base: Omit<InvestmentParams, "annualRate">) {
+    return rates.map(rate => {
+        const simulate = simulateInvestment({ ...base, annualRate: rate })
+
+        return {
             rate,
-            grossProfit:simulate.grossProfit,
-            tax:simulate.tax,
             finalValue: simulate.finalValue,
-            profit: simulate.netProfit,
+            grossProfit: simulate.grossProfit,
+            tax: simulate.tax,
+            netProfit: simulate.netProfit,
             roi: simulate.roi
         }
     })
 }
-export  function  exportCsv(
-    file:string,
-    sim:SimulationResult
 
-){
-    const rows:string[] = []
-    const months = sim.history.length
+export function exportCsv(file: string, sim: SimulationResult) {
+    const rows: string[] = []
+    rows.push("An,Valoare,Investitie,ProfitBrut,Taxe,ProfitNet")
 
-    rows.push("Luna,Valoare,Invwstie,ProfitBrut,Taxe,ProftNet")
-
-    const  investedPerMonth=    sim.invested/months
-    sim.history.forEach((value,index)=>{
-
-            const invested = investedPerMonth * (index + 1)
-            const grossProfit = value - invested
-            const tax = sim.tax > 0 && grossProfit > 0 ? grossProfit * (sim.tax / sim.netProfit) : 0
-            const netProfit = grossProfit - tax
-
-
+    sim.yearlySnapshots?.forEach(snapshot => {
         rows.push(
-            `${index + 1},${value.toFixed(2)},${invested.toFixed(2)},${grossProfit.toFixed(2)},${tax.toFixed(2)},${netProfit.toFixed(2)}`
+            `${snapshot.year},${snapshot.value.toFixed(2)},${snapshot.invested.toFixed(2)},${snapshot.grossProfit.toFixed(2)},${snapshot.tax.toFixed(2)},${snapshot.netProfit.toFixed(2)}`
         )
     })
+
     fs.writeFileSync(file, rows.join("\n"))
-
 }
-export function printTextChart(
-    sim: SimulationResult,
-    useNetProfit: boolean = false
-) {
+
+export function printTextChart(sim: SimulationResult, useNetProfit: boolean = false) {
     console.log("Evolutie pe ani:")
-    for (let i = 1; i <= sim.history.length; i++) {
-        if (i % 12 === 0) {
-            const year = i / 12
-            const value = sim.history[i - 1]   // index 0-based
-            const profit = useNetProfit
-                ? value - sim.invested - sim.tax
-                : value - sim.invested
-            console.log(`An ${year}: ${value.toFixed(0)} RON (+${profit.toFixed(0)} dobândă)`)
-        }
-    }
+    sim.yearlySnapshots?.forEach(snapshot => {
+        const profit = useNetProfit ? snapshot.netProfit : snapshot.grossProfit
+        console.log(`An ${snapshot.year}: ${snapshot.value.toFixed(0)} RON (+${profit.toFixed(0)} dobanda)`)
+    })
 }
-
