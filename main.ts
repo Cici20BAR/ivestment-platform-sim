@@ -13,8 +13,18 @@ function  getArgs(argname:string):string|undefined{
     }
 
 
-
-
-
-
 }
+
+
+const  params:InvestmentParams={
+    initial:Number(getArgs("--initial")||0),
+    annualRate:Number(getArgs("--rate")||0),
+    years:Number(getArgs("--years")||0),
+    monthlyContribution:Number(getArgs("--monthly")||0),
+    inflation:Number(getArgs("--inflation")||0),
+    taxRate:getArgs("--taxes")?Number(getArgs("--taxes")):undefined//optional
+}
+if (getArgs("--annual")){
+    (params as any).anualContribution=Number(getArgs("--annual"));
+
+}// "New feature implemented without modifying the interfaces
