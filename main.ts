@@ -27,4 +27,4 @@ const  params:InvestmentParams={
 if (getArgs("--annual")){
     (params as any).anualContribution=Number(getArgs("--annual"));
 
-}// "New feature implemented without modifying the interfaces
+}// New feature implemented without modifying the interfaces
