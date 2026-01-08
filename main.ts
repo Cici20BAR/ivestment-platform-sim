@@ -33,29 +33,56 @@ const showChart = args.includes("--chart")
 const chartNet = args.includes("--net")
 
 if (!args.includes("--compare") && !args.includes("--scenarios") && !args.includes("--montecarlo")) {
-    const sim=simulateInvestment(params);
+    const sim = simulateInvestment(params);
     console.log(`Simulare Investiție - ${params.years} ani`)
     console.log("Parametri:")
     console.log(` Suma inițială: ${params.initial.toLocaleString()} RON`)
-    console.log(` Rată dobândă anuală: ${(params.annualRate*100).toFixed(1)}%`)
+    console.log(` Rată dobândă anuală: ${(params.annualRate * 100).toFixed(1)}%`)
     console.log(` Contribuție lunară: ${params.monthlyContribution} RON`)
     if ((params as any).annualContribution) console.log(` Contribuție anuală: ${(params as any).annualContribution} RON`)
-    console.log(` Perioadă: ${params.years} ani (${params.years*12} luni)`)
+    console.log(` Perioadă: ${params.years} ani (${params.years * 12} luni)`)
 
     console.log("Rezultate:")
     console.log(` Suma totală investită: ${sim.invested.toLocaleString()} RON`)
     console.log(` Valoare finală: ${sim.finalValue.toLocaleString()} RON`)
     console.log(` Profit total: ${sim.grossProfit.toLocaleString()} RON`)
-    console.log(` ROI: ${(sim.roi*100).toFixed(1)}%`)
+    console.log(` ROI: ${(sim.roi * 100).toFixed(1)}%`)
     console.log(` Dobândă câștigată: ${sim.netProfit.toLocaleString()} RON`)
-    if(showChart) printTextChart(sim,chartNet);
+    if (showChart) printTextChart(sim, chartNet);
 
-    const exportFile=getArgs("--export");
-    if(exportFile){
-        exportCsv(exportFile,sim);
+    const exportFile = getArgs("--export");
+    if (exportFile) {
+        exportCsv(exportFile, sim);
         console.log(` Export ${exportFile}`);
 
     }
 
-
 }
+// comp rates
+    if (args.includes("--compare")) {
+        const rateStr = getArgs("--rates") || getArgs("--compare")
+        if (!rateStr) {
+            console.error("Trebuie să specifici rate separate prin virgula")
+            process.exit(1)
+        }
+
+        const rates = rateStr.split(",").map(r => Number(r.trim()))
+        const results = compareRates(rates, { ...params })
+
+        console.log(`\nComparatie rate de dobanda (${params.years} ani, ${params.initial.toLocaleString()} RON initial):`)
+
+        const maxFinal = Math.max(...results.map(r => r.finalValue))
+
+        results.forEach(r => {
+            const recommended = r.finalValue === maxFinal ? " ← recomandat" : ""
+            console.log(
+                `${(r.rate*100).toFixed(1)}%: ${r.finalValue.toLocaleString()} RON (profit: ${r.profit.toLocaleString()})${recommended}`
+            )
+
+            if (showChart) {
+                printTextChart(simulateInvestment({ ...params, annualRate: r.rate }), chartNet)
+            }
+        })
+    }
+
+
