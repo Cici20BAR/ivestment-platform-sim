@@ -42,7 +42,7 @@ if (!args.includes("--compare") && !args.includes("--scenarios") && !args.includ
     console.log(` Suma totala investita: ${sim.invested.toLocaleString()} RON`)
 
     if (params.inflation > 0 || params.taxRate !== undefined) {
-        console.log(` Profit brut (dupa dobanda si inflatie): ${sim.grossProfit.toLocaleString()} RON`)
+        console.log(` Profit brut (dupa dobanda si / sau inflatie): ${sim.grossProfit.toLocaleString()} RON`)
     }
     if (params.taxRate !== undefined && sim.tax > 0) {
         console.log(` Taxe aplicate (${(params.taxRate * 100).toFixed(1)}%): -${sim.tax.toLocaleString()} RON`)
