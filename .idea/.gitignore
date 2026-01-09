@@ -1,9 +1,16 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-node_modules/
+# Node modules
+/node_modules/
+
+# Build / dist folder
+/dist/
+
+# Logs
+*.log
+
+# IDE / Editor
+/.idea/
+/.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,5 +1,26 @@
 {
-  "dependencies": {
-    "@types/node": "^25.0.3"
-  }
+  "name": "proiect-map",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cici20BAR/ivestment-platform-sim.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cici20BAR/ivestment-platform-sim/issues"
+  },
+  "homepage": "https://github.com/Cici20BAR/ivestment-platform-sim#readme",
+  "type": "module"
 }
