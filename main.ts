@@ -37,6 +37,19 @@ if (!args.includes("--compare") && !args.includes("--scenarios") && !args.includ
     console.log(` Contributie lunara: ${params.monthlyContribution} RON`)
     if ((params as any).annualContribution) console.log(` Contributie anuala: ${(params as any).annualContribution} RON`)
     console.log(` Perioada: ${params.years} ani (${params.years * 12} luni)`)
+    if (params.inflation > 0) {
+        console.log(` Inflatie anuala: ${(params.inflation * 100).toFixed(1)}%`)
+    }
+    if (params.taxRate !== undefined) {
+        console.log(` Taxe pe profit: ${(params.taxRate * 100).toFixed(1)}%`)
+    }
+    if ((params as any).annualContribution) {
+        console.log(` Contributie anuala: ${(params as any).annualContribution} RON`)
+    }
+    if (showChart) {
+        console.log(` Grafic: ${chartNet ? "profit net" : "profit brut"}`)
+    }
+
 
     console.log("Rezultate:")
     console.log(` Suma totala investita: ${sim.invested.toLocaleString()} RON`)
