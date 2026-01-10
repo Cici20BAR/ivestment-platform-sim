@@ -57,7 +57,7 @@ if (args.length > 0 && !args.includes("--help")) {
     if (args.length === 0 || args.includes("--help")) {
         process.exit(0);
     }
-}///
+}// end menu
 const allowedFlags = [
     "--initial", "--rate", "--years", "--monthly", "--annual",
     "--inflation", "--taxes", "--chart", "--net", "--export",
