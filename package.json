@@ -1,14 +1,20 @@
 {
   "name": "proiect-map",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Simulator de investitii cu validare si suport Docker",
+  "main": "dist/main.js",
+  "type": "module",
+  "bin": {
+    "simuleaza": "./dist/main.js"
+  },
   "devDependencies": {
     "@types/node": "^25.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +27,5 @@
   "bugs": {
     "url": "https://github.com/Cici20BAR/ivestment-platform-sim/issues"
   },
-  "homepage": "https://github.com/Cici20BAR/ivestment-platform-sim#readme",
-  "type": "module"
+  "homepage": "https://github.com/Cici20BAR/ivestment-platform-sim#readme"
 }
