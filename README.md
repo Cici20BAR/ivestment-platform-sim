@@ -43,3 +43,8 @@ A comprehensive TypeScript-based investment simulator designed to calculate fina
 npm install
 npm run build
 node dist/main.js [arguments]
+
+
+
+## Demo Screenshot
+![Simulation Demo](Screenshot 2026-01-10 202747.png)
