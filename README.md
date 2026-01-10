@@ -6,7 +6,9 @@ A comprehensive TypeScript-based investment simulator designed to calculate fina
 * Node.js (v20+)
 * npm
 * Docker Desktop
-
+1. **Clone:**
+   
+ *  https://github.com/Cici20BAR/ivestment-platform-sim 
 ## Core Logic and Functions
 * **Calculation Engine**: Computes annual growth based on principal and interest.
 * **Economic Adjustments**: Functions to calculate net value after inflation and tax deductions.
@@ -47,4 +49,3 @@ node dist/main.js [arguments]
 
 
 ## Demo Screenshot
-<img src="Screenshot 2026-01-10 202747.png">
