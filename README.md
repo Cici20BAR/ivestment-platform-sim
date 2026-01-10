@@ -56,4 +56,8 @@ node dist/main.js [arguments]
 
 
 
-## Demo Screenshot
+## Rapid Evaluation (Docker Hub)
+For grading purposes, the project image is publicly available on Docker Hub. The evaluator can download and run the simulator without any local configuration:
+`
+# Direct download and execution from Docker Hub:
+docker run --rm raresrobertc/investment-sim:latest and then args 
