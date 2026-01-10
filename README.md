@@ -2,6 +2,13 @@
 
 A comprehensive TypeScript-based investment simulator designed to calculate financial growth through various economic lenses. The application supports local execution and containerized environments via Docker.
 
+
+
+##  Motivation and Purpose
+In today's complex economic landscape, financial literacy is more than a skill—it is a necessity. This project was born out of the need for a transparent, robust, and accessible tool that goes beyond simple interest calculators.
+
+The goal of this simulator is to empower users to visualize the long-term impact of their financial decisions by accounting for real-world variables such as annual inflation, tax deductions, and market volatility (via Monte Carlo simulations). By providing a clear, data-driven perspective, this tool aims to bridge the gap between abstract financial concepts and tangible future outcomes.
+
 ## Prerequisites
 * Node.js (v20+)
 * npm
