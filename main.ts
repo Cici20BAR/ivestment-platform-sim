@@ -2,6 +2,7 @@
 import { simulateInvestment, printTextChart, exportCsv, compareRates, economicScenarios, monteCarlo } from "./functions.js"
 import type { InvestmentParams } from "./interface"
 
+
 //test docker
 import fs from 'fs';
 
@@ -14,22 +15,65 @@ if (isDocker) {
 }
 //end
 const args = process.argv.slice(2)
+//meniu
+function help(flag: boolean = false) {
+    console.log("-------------------------------------------------------");
+    console.log("   SIMULATOR INVESTITII          ");
+    console.log("-------------------------------------------------------");
+
+    if (flag) return;
+
+    // Daca a cerut help sau nu a pus argumente, afisam tot meniul
+    console.log("UTILIZARE:");
+    console.log("  node dist/main.js [optiuni]");
+    console.log("");
+    console.log("PARAMETRI FINANCIARI:");
+    console.log("  --initial [nr]    Suma de start (ex: 1000)");
+    console.log("  --rate [nr]       Rata profitului (ex: 0.07 pentru 7%)");
+    console.log("  --years [nr]      Durata investitiei in ani");
+    console.log("  --monthly [nr]    Depunere in fiecare luna");
+    console.log("  --annual [nr]     Depunere o data pe an (bonus)");
+    console.log("");
+    console.log("ANALIZA SI FILTRE:");
+    console.log("  --inflation [nr]  Scade puterea de cumparare (ex: 0.03)");
+    console.log("  --taxes [nr]      Impozit pe profit (ex: 0.10)");
+    console.log("  --net             Calculeaza totul dupa taxe si inflatie");
+    console.log("");
+    console.log("MODURI SPECIALE:");
+    console.log("  --chart           Afiseaza graficul evolutiei in terminal");
+    console.log("  --compare         Compara mai multe rate de profit");
+    console.log("  --montecarlo      Ruleaza simulari de risc aleatorii");
+    console.log("");
+    console.log("EXPORT:");
+    console.log("  --export [nume.csv] Salveaza datele pentru Excel");
+    console.log("-------------------------------------------------------");
+}
 
 
+if (args.length > 0 && !args.includes("--help")) {
+    help(true);
+} else {
+    help(false);
+    if (args.length === 0 || args.includes("--help")) {
+        process.exit(0);
+    }
+}///
 const allowedFlags = [
     "--initial", "--rate", "--years", "--monthly", "--annual",
     "--inflation", "--taxes", "--chart", "--net", "--export",
     "--compare", "--rates", "--scenarios", "--montecarlo",
-    "--runs", "--rate_range"
+    "--runs", "--rate_range","--help"
 ];
 
 args.forEach(arg => {
     if (arg.startsWith("--") && !allowedFlags.includes(arg)) {
         console.error(`Eroare: Comanda "${arg}" nu este recunoscuta.`);
         console.log(`Comenzi permise: ${allowedFlags.join(", ")}`);
+        help(false)
         process.exit(1);
     }
 });
+help(true);
 function getArgs(argname: string): string | undefined {
     const idx = args.indexOf(argname)
     if (idx != -1 && idx < args.length) {
