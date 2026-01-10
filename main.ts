@@ -3,6 +3,22 @@ import { simulateInvestment, printTextChart, exportCsv, compareRates, economicSc
 import type { InvestmentParams } from "./interface"
 
 const args = process.argv.slice(2)
+
+
+const allowedFlags = [
+    "--initial", "--rate", "--years", "--monthly", "--annual",
+    "--inflation", "--taxes", "--chart", "--net", "--export",
+    "--compare", "--rates", "--scenarios", "--montecarlo",
+    "--runs", "--rate_range"
+];
+
+args.forEach(arg => {
+    if (arg.startsWith("--") && !allowedFlags.includes(arg)) {
+        console.error(`Eroare: Comanda "${arg}" nu este recunoscuta.`);
+        console.log(`Comenzi permise: ${allowedFlags.join(", ")}`);
+        process.exit(1);
+    }
+});
 function getArgs(argname: string): string | undefined {
     const idx = args.indexOf(argname)
     if (idx != -1 && idx < args.length) {
@@ -11,7 +27,20 @@ function getArgs(argname: string): string | undefined {
         return undefined
     }
 }
-
+function assertNumber(name: string, value: number, allowZero = true) {
+    if (Number.isNaN(value)) {
+        console.error(`Eroare: ${name} trebuie sa fie un numar valid.`);
+        process.exit(1);
+    }
+    if (!allowZero && value === 0) {
+        console.error(`Eroare: ${name} trebuie sa fie mai mare decat 0.`);
+        process.exit(1);
+    }
+    if (value < 0) {
+        console.error(`Eroare: ${name} trebuie sa fie >= 0.`);
+        process.exit(1);
+    }
+}
 const params: InvestmentParams = {
     initial: Number(getArgs("--initial") || 0),
     annualRate: Number(getArgs("--rate") || 0),
@@ -20,13 +49,20 @@ const params: InvestmentParams = {
     inflation: Number(getArgs("--inflation") || 0),
     taxRate: getArgs("--taxes") ? Number(getArgs("--taxes")) : undefined
 }
-
+assertNumber("Suma initiala (--initial)", params.initial);
+assertNumber("Rata anuala (--rate)", params.annualRate);
+assertNumber("Anii (--years)", params.years, false);
+assertNumber("Contributia lunara (--monthly)", params.monthlyContribution);
+assertNumber("Inflatia (--inflation)", params.inflation);
 if (getArgs("--annual")) {
-    (params as any).annualContribution = Number(getArgs("--annual"))
+    const annualContrib = Number(getArgs("--annual"));
+    assertNumber("Contributia anuala (--annual)", annualContrib);
+    (params as any).annualContribution = annualContrib;
 }
 
 const showChart = args.includes("--chart")
 const chartNet = args.includes("--net")
+
 
 if (!args.includes("--compare") && !args.includes("--scenarios") && !args.includes("--montecarlo")) {
     const sim = simulateInvestment(params)
@@ -87,12 +123,17 @@ if (args.includes("--compare")) {
         process.exit(1)
     }
 
-    const rates = rateStr.split(",").map(r => Number(r.trim()))
+    const rates = rateStr.split(",").map(r => {
+        const val = Number(r.trim());
+        assertNumber("Rata de comparatie", val);
+        return val;
+    })
     const results = compareRates(rates, { ...params })
+    console.log(`\nComparatie rate de dobanda:`)
+    const maxFinal = Math.max(...results.map(r => r.finalValue))
 
     console.log(`\nComparatie rate de dobanda (${params.years} ani, ${params.initial.toLocaleString()} RON initial):`)
 
-    const maxFinal = Math.max(...results.map(r => r.finalValue))
 
     results.forEach(r => {
         const recommended = r.finalValue === maxFinal ? " <- recomandat" : ""
@@ -120,6 +161,9 @@ if (args.includes("--montecarlo")) {
         process.exit(1)
     }
     const [min, max] = range.split("-").map(r => Number(r.trim()))
+    assertNumber("Numarul de rulari (--runs)", runs, false);
+    assertNumber("Rata minima range", min);
+    assertNumber("Rata maxima range", max);
     const res = monteCarlo(runs, min, max, { ...params })
     console.log(`\nMonte Carlo (${runs} simulari, rate ${min}-${max}):`)
     console.log(` Min: ${res.min.toLocaleString()} RON`)
