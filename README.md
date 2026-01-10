@@ -47,4 +47,4 @@ node dist/main.js [arguments]
 
 
 ## Demo Screenshot
-![Simulation Demo](Screenshot 2026-01-10 202747.png)
+![Simulation Demo](C:\Users\cici\Desktop\proiect map\Screenshot 2026-01-10 202747.png)
