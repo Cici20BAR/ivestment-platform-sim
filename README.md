@@ -21,25 +21,25 @@ A comprehensive TypeScript-based investment simulator designed to calculate fina
 2. **Run**: `docker run --rm investment-sim [arguments]`
 
 ## Available Arguments
-| Argument     | Description | Required Input   |
-|:-------------| :--- |:-----------------|
-| --initial    | Starting investment amount | Number           |
-| --rate       | Annual interest rate (decimal) | Number (0.07)    |
-| --years      | Duration of investment | Number           |
-| --monthly    | Monthly contribution | Number           |
-| --annual     | Yearly contribution | Number           |
-| --inflation  | Annual inflation rate | Number           |
-| --taxes      | Tax rate on profit | Number           |
+| Argument     | Description                     | Required Input   |
+|:-------------|:--------------------------------|:-----------------|
+| --initial    | Starting investment amount      | Number           |
+| --rate       | Annual interest rate (decimal)  | Number (0.07)    |
+| --years      | Duration of investment          | Number           |
+| --monthly    | Monthly contribution            | Number           |
+| --annual     | Yearly contribution             | Number           |
+| --inflation  | Annual inflation rate           | Number           |
+| --taxes      | Tax rate on profit              | Number           |
 | --net        | Calculate real purchasing power | None             |
-| --chart      | Display growth chart | None             |
-| --export     | Save results to file | Filename         |
-| --compare    | Enable comparison mode | None             |
-| --rates      | Rates for comparison | List (0.05,0.08) |
-| --scenarios  | Run preset market scenarios | None             |
-| --montecarlo | Enable probabilistic risk | None             |
-| --runs       | Number of Monte Carlo runs | Number           |
-| --rate_range | Min/Max volatility range | Pair (0.02,0.12) |
-| --help       | Display growth chart | None             |
+| --chart      | Display growth chart            | None             |
+| --export     | Save results to file            | Filename         |
+| --compare    | Enable comparison mode          | None             |
+| --rates      | Rates for comparison            | List (0.05,0.08) |
+| --scenarios  | Run preset market scenarios     | None             |
+| --montecarlo | Enable probabilistic risk       | None             |
+| --runs       | Number of Monte Carlo runs      | Number           |
+| --rate_range | Min/Max volatility range        | Pair (0.02,0.12) |
+| --help       | Display menu                    | None             |
 
 ## Local Installation
 ```bash
