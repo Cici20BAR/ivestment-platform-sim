@@ -2,6 +2,17 @@
 import { simulateInvestment, printTextChart, exportCsv, compareRates, economicScenarios, monteCarlo } from "./functions.js"
 import type { InvestmentParams } from "./interface"
 
+//test docker
+import fs from 'fs';
+
+const isDocker = fs.existsSync('/.dockerenv');
+
+if (isDocker) {
+    console.log(" Rulez in interiorul unui container Docker!");
+} else {
+    console.log(" Rulez local pe calculator.");
+}
+//end
 const args = process.argv.slice(2)
 
 
