@@ -136,12 +136,24 @@ export function simulateInvestment(p: InvestmentParams): SimulationResult {
 }
 
 
-export function economicScenarios(s: InvestmentParams) {
+export function economicScenarios(params: InvestmentParams) {
+    const { annualRate } = params;
+
     return {
-        pessimist: simulateInvestment({ ...s, annualRate: s.annualRate - 0.03 }),
-        realist: simulateInvestment(s),
-        optimist: simulateInvestment({ ...s, annualRate: s.annualRate + 0.03 })
-    }
+        pessimist: simulateInvestment({
+            ...params,
+            annualRate: Math.max(0.01, annualRate * 0.7), // -30%, min 1%
+            inflation: (params.inflation || 0) + 0.02 // +2% inflation
+        }),
+
+        realist: simulateInvestment(params),
+
+        optimist: simulateInvestment({
+            ...params,
+            annualRate: annualRate * 1.3, // +30%
+            inflation: Math.max(0, (params.inflation || 0) - 0.01) // -1% inflation
+        })
+    };
 }
 
 export function monteCarlo(runs: number, rateMin: number, rateMax: number, base: Omit<InvestmentParams, "annualRate">):MonteCarloResult   {
