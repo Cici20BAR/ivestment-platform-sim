@@ -1,4 +1,4 @@
-import { InvestmentParams, SimulationResult, YearSnapshot } from "./interface"
+import { InvestmentParams, SimulationResult, YearSnapshot ,MonteCarloResult} from "./interface"
 import fs from "fs"
 
 export function simulateInvestment(p: InvestmentParams): SimulationResult {
@@ -144,7 +144,7 @@ export function economicScenarios(s: InvestmentParams) {
     }
 }
 
-export function monteCarlo(runs: number, rateMin: number, rateMax: number, base: Omit<InvestmentParams, "annualRate">) {
+export function monteCarlo(runs: number, rateMin: number, rateMax: number, base: Omit<InvestmentParams, "annualRate">):MonteCarloResult   {
     const results: number[] = []
 
     for (let i = 0; i < runs; i++) {
@@ -153,10 +153,55 @@ export function monteCarlo(runs: number, rateMin: number, rateMax: number, base:
         results.push(sim_res.finalValue)
     }
 
+
+
+    const min= Math.min(...results)
+       const max= Math.max(...results)
+        const avg=results.reduce((a, b) => a + b, 0) / runs
+    results.sort((a, b) => a - b)
+    //Standard Deviation ,formula:qrt( Σ(xᵢ - mean)² / n )
+    const squaredDiffs = results.map(v => Math.pow(v - avg, 2))
+    const variance = squaredDiffs.reduce((a, b) => a + b, 0) / results.length
+    const stdDev = Math.sqrt(variance)
+//Percentile (Value at Risk) formula
+    const percentiles: Record<number, number> = {}
+    const percentileLevels = [5, 25, 50, 75, 95]
+
+
+    for (const p of percentileLevels) {
+        const index = Math.floor((p / 100) * results.length)
+        percentiles[p] = results[Math.min(index, results.length - 1)]
+    }
+    //Probability of loss
+
+    const initialInvestment = base.initial
+    const lossCount = results.filter(v => v < initialInvestment).length
+    const probabilityLoss = lossCount / runs
+    //Confidence Interval 95%
+
+    const zScore95 = 1.96
+    const marginOfError = zScore95 * (stdDev / Math.sqrt(results.length))
+    const confidence95: [number, number] = [
+        avg - marginOfError,
+        avg + marginOfError
+    ]
+    //expectedAnnualReturn,(End/Start)^(1/years) - 1
+
+
+    const years = base.years
+    const expectedAnnualReturn = Math.pow(avg / initialInvestment, 1 / years) - 1
+
     return {
-        min: Math.min(...results),
-        max: Math.max(...results),
-        avg: results.reduce((a, b) => a + b, 0) / runs
+        min,
+        max,
+        avg,
+        stdDev,
+        percentiles,
+        probabilityLoss,
+        confidence95,
+        expectedAnnualReturn,
+
+
     }
 }
 
