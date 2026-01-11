@@ -28,3 +28,14 @@ export interface YearSnapshot {
     tax: number
     netProfit: number
 }
+export interface MonteCarloResult {
+    min: number;
+    max: number;
+    avg: number;
+    stdDev: number;
+    percentiles: Record<number, number>;
+    probabilityLoss: number;
+    confidence95: [number, number];
+    expectedAnnualReturn: number;
+
+}
