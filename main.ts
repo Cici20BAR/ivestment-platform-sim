@@ -161,6 +161,11 @@ if (!args.includes("--compare") && !args.includes("--scenarios") && !args.includ
         const breakEvenYear = Math.ceil(sim.breakEvenMonth / 12)
         console.log(` Punct break-even: anul ${breakEvenYear} (luna ${sim.breakEvenMonth})`)
     }
+    console.log("Evolutie pe ani:")
+    sim.yearlySnapshots?.forEach(snapshot => {
+        const profit = snapshot.netProfit ? snapshot.netProfit : snapshot.grossProfit
+        console.log(`An ${snapshot.year}: ${snapshot.value.toFixed(0)} RON (+${profit.toFixed(0)} dobanda)`)
+    })
     if (showChart) printTextChart(sim, chartNet)
 
     const exportFile = getArgs("--export")
