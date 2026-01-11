@@ -73,7 +73,6 @@ args.forEach(arg => {
         process.exit(1);
     }
 });
-help(true);
 function getArgs(argname: string): string | undefined {
     const idx = args.indexOf(argname)
     if (idx != -1 && idx < args.length) {
@@ -221,7 +220,30 @@ if (args.includes("--montecarlo")) {
     assertNumber("Rata maxima range", max);
     const res = monteCarlo(runs, min, max, { ...params })
     console.log(`\nMonte Carlo (${runs} simulari, rate ${min}-${max}):`)
-    console.log(` Min: ${res.min.toLocaleString()} RON`)
-    console.log(` Max: ${res.max.toLocaleString()} RON`)
-    console.log(` Avg: ${res.avg.toLocaleString()} RON`)
+
+    console.log("\nREZULTATE FINANCIARE:");
+    console.log(`Minim: ${res.min.toLocaleString()} RON`);
+    console.log(`Maxim: ${res.max.toLocaleString()} RON`);
+    console.log(`Medie: ${res.avg.toLocaleString()} RON`);
+    console.log(`Deviatie standard: ${res.stdDev.toLocaleString()} RON`);
+
+    console.log("\nPROBABILITATI:");
+    console.log(`Probabilitate pierdere: ${(res.probabilityLoss * 100).toFixed(1)}%`);
+    console.log(`Randament anual asteptat: ${(res.expectedAnnualReturn * 100).toFixed(2)}%`);
+
+    console.log("\nPERCENTILE (Value at Risk):");
+    console.log(`5% (worst case): ${res.percentiles[5].toLocaleString()} RON`);
+    console.log(`25%: ${res.percentiles[25].toLocaleString()} RON`);
+    console.log(`50% (median): ${res.percentiles[50].toLocaleString()} RON`);
+    console.log(`75%: ${res.percentiles[75].toLocaleString()} RON`);
+    console.log(`95% (best case): ${res.percentiles[95].toLocaleString()} RON`);
+
+    console.log("\nINTERVAL DE INCREDERE 95%:");
+    console.log(`[${res.confidence95[0].toLocaleString()} RON, ${res.confidence95[1].toLocaleString()} RON]`);
+    console.log(`Lungime interval: ${(res.confidence95[1] - res.confidence95[0]).toLocaleString()} RON`);
+
+    console.log("\nSCENARII:");
+    console.log(`Pesimist (5%): ${res.percentiles[5].toLocaleString()} RON`);
+    console.log(`Realist (50%): ${res.percentiles[50].toLocaleString()} RON`);
+    console.log(`Optimist (95%): ${res.percentiles[95].toLocaleString()} RON`)
 }
