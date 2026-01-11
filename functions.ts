@@ -2,11 +2,11 @@ import { InvestmentParams, SimulationResult, YearSnapshot ,MonteCarloResult} fro
 import fs from "fs"
 
 export function simulateInvestment(p: InvestmentParams): SimulationResult {
-    const { initial, annualRate, years, monthlyContribution = 0, inflation = 0, taxRate = 0 } = p;
+    const {initial, annualRate, years, monthlyContribution = 0, inflation = 0, taxRate = 0} = p;
     const months = years * 12;
 
     // CORRECT: Monthly compound rate from annual rate
-    const monthlyRate = Math.pow(1 + annualRate, 1/12) - 1;
+    const monthlyRate = Math.pow(1 + annualRate, 1 / 12) - 1;
 
     // 1. FUTURE VALUE OF INITIAL LUMP SUM
     // Using: FV = P * (1 + r)^n
@@ -94,7 +94,7 @@ export function simulateInvestment(p: InvestmentParams): SimulationResult {
 
         // Adjust for inflation (monthly)
         if (inflation > 0) {
-            const monthlyInflationFactor = Math.pow(1 + inflation, 1/12);
+            const monthlyInflationFactor = Math.pow(1 + inflation, 1 / 12);
             runningValue /= monthlyInflationFactor;
         }
 
@@ -132,123 +132,168 @@ export function simulateInvestment(p: InvestmentParams): SimulationResult {
         roi,
         breakEvenMonth,
         yearlySnapshots
-    };
-}
-
-
-export function economicScenarios(params: InvestmentParams) {
-    const { annualRate } = params;
-
-    return {
-        pessimist: simulateInvestment({
-            ...params,
-            annualRate: Math.max(0.01, annualRate * 0.7), // -30%, min 1%
-            inflation: (params.inflation || 0) + 0.02 // +2% inflation
-        }),
-
-        realist: simulateInvestment(params),
-
-        optimist: simulateInvestment({
-            ...params,
-            annualRate: annualRate * 1.3, // +30%
-            inflation: Math.max(0, (params.inflation || 0) - 0.01) // -1% inflation
-        })
-    };
-}
-
-export function monteCarlo(runs: number, rateMin: number, rateMax: number, base: Omit<InvestmentParams, "annualRate">):MonteCarloResult   {
-    const results: number[] = []
-
-    for (let i = 0; i < runs; i++) {
-        const rate = rateMin + Math.random() * (rateMax - rateMin)
-        const sim_res = simulateInvestment({ ...base, annualRate: rate })
-        results.push(sim_res.finalValue)
     }
 
 
-
-    const min= Math.min(...results)
-       const max= Math.max(...results)
-        const avg=results.reduce((a, b) => a + b, 0) / runs
-    results.sort((a, b) => a - b)
-    //Standard Deviation ,formula:qrt( Σ(xᵢ - mean)² / n )
-    const squaredDiffs = results.map(v => Math.pow(v - avg, 2))
-    const variance = squaredDiffs.reduce((a, b) => a + b, 0) / results.length
-    const stdDev = Math.sqrt(variance)
-//Percentile (Value at Risk) formula
-    const percentiles: Record<number, number> = {}
-    const percentileLevels = [5, 25, 50, 75, 95]
-
-
-    for (const p of percentileLevels) {
-        const index = Math.floor((p / 100) * results.length)
-        percentiles[p] = results[Math.min(index, results.length - 1)]
-    }
-    //Probability of loss
-
-    const initialInvestment = base.initial
-    const lossCount = results.filter(v => v < initialInvestment).length
-    const probabilityLoss = lossCount / runs
-    //Confidence Interval 95%
-
-    const zScore95 = 1.96
-    const marginOfError = zScore95 * (stdDev / Math.sqrt(results.length))
-    const confidence95: [number, number] = [
-        avg - marginOfError,
-        avg + marginOfError
-    ]
-    //expectedAnnualReturn,(End/Start)^(1/years) - 1
-
-
-    const years = base.years
-    const expectedAnnualReturn = Math.pow(avg / initialInvestment, 1 / years) - 1
-
-    return {
-        min,
-        max,
-        avg,
-        stdDev,
-        percentiles,
-        probabilityLoss,
-        confidence95,
-        expectedAnnualReturn,
-
-
-    }
 }
 
-export function compareRates(rates: number[], base: Omit<InvestmentParams, "annualRate">) {
-    return rates.map(rate => {
-        const simulate = simulateInvestment({ ...base, annualRate: rate })
+
+    export function economicScenarios(params: InvestmentParams) {
+        const {annualRate} = params;
 
         return {
-            rate,
-            finalValue: simulate.finalValue,
-            grossProfit: simulate.grossProfit,
-            tax: simulate.tax,
-            netProfit: simulate.netProfit,
-            roi: simulate.roi
+            pessimist: simulateInvestment({
+                ...params,
+                annualRate: Math.max(0.01, annualRate * 0.7), // -30%, min 1%
+                inflation: (params.inflation || 0) + 0.02 // +2% inflation
+            }),
+
+            realist: simulateInvestment(params),
+
+            optimist: simulateInvestment({
+                ...params,
+                annualRate: annualRate * 1.3, // +30%
+                inflation: Math.max(0, (params.inflation || 0) - 0.01) // -1% inflation
+            })
+        };
+    }
+
+    export function monteCarlo(runs: number, rateMin: number, rateMax: number, base: Omit<InvestmentParams, "annualRate">): MonteCarloResult {
+        const results: number[] = []
+
+        for (let i = 0; i < runs; i++) {
+            const rate = rateMin + Math.random() * (rateMax - rateMin)
+            const sim_res = simulateInvestment({...base, annualRate: rate})
+            results.push(sim_res.finalValue)
         }
-    })
-}
 
-export function exportCsv(file: string, sim: SimulationResult) {
-    const rows: string[] = []
-    rows.push("An,Valoare,Investitie,ProfitBrut,Taxe,ProfitNet")
 
-    sim.yearlySnapshots?.forEach(snapshot => {
-        rows.push(
-            `${snapshot.year},${snapshot.value.toFixed(2)},${snapshot.invested.toFixed(2)},${snapshot.grossProfit.toFixed(2)},${snapshot.tax.toFixed(2)},${snapshot.netProfit.toFixed(2)}`
-        )
-    })
+        const min = Math.min(...results)
+        const max = Math.max(...results)
+        const avg = results.reduce((a, b) => a + b, 0) / runs
+        results.sort((a, b) => a - b)
+        //Standard Deviation ,formula:qrt( Σ(xᵢ - mean)² / n )
+        const squaredDiffs = results.map(v => Math.pow(v - avg, 2))
+        const variance = squaredDiffs.reduce((a, b) => a + b, 0) / results.length
+        const stdDev = Math.sqrt(variance)
+//Percentile (Value at Risk) formula
+        const percentiles: Record<number, number> = {}
+        const percentileLevels = [5, 25, 50, 75, 95]
 
-    fs.writeFileSync(file, rows.join("\n"))
-}
 
-export function printTextChart(sim: SimulationResult, useNetProfit: boolean = false) {
-    console.log("Evolutie pe ani:")
-    sim.yearlySnapshots?.forEach(snapshot => {
-        const profit = useNetProfit ? snapshot.netProfit : snapshot.grossProfit
-        console.log(`An ${snapshot.year}: ${snapshot.value.toFixed(0)} RON (+${profit.toFixed(0)} dobanda)`)
-    })
-}
+        for (const p of percentileLevels) {
+            const index = Math.floor((p / 100) * results.length)
+            percentiles[p] = results[Math.min(index, results.length - 1)]
+        }
+        //Probability of loss
+
+        const initialInvestment = base.initial
+        const lossCount = results.filter(v => v < initialInvestment).length
+        const probabilityLoss = lossCount / runs
+        //Confidence Interval 95%
+
+        const zScore95 = 1.96
+        const marginOfError = zScore95 * (stdDev / Math.sqrt(results.length))
+        const confidence95: [number, number] = [
+            avg - marginOfError,
+            avg + marginOfError
+        ]
+        //expectedAnnualReturn,(End/Start)^(1/years) - 1
+
+
+        const years = base.years
+        const expectedAnnualReturn = Math.pow(avg / initialInvestment, 1 / years) - 1
+
+        return {
+            min,
+            max,
+            avg,
+            stdDev,
+            percentiles,
+            probabilityLoss,
+            confidence95,
+            expectedAnnualReturn,
+
+
+        }
+    }
+
+    export function compareRates(rates: number[], base: Omit<InvestmentParams, "annualRate">) {
+        return rates.map(rate => {
+            const simulate = simulateInvestment({...base, annualRate: rate})
+
+            return {
+                rate,
+                finalValue: simulate.finalValue,
+                grossProfit: simulate.grossProfit,
+                tax: simulate.tax,
+                netProfit: simulate.netProfit,
+                roi: simulate.roi
+            }
+        })
+    }
+
+    export function exportCsv(file: string, sim: SimulationResult) {
+        const rows: string[] = []
+        rows.push("An,Valoare,Investitie,ProfitBrut,Taxe,ProfitNet")
+
+        sim.yearlySnapshots?.forEach(snapshot => {
+            rows.push(
+                `${snapshot.year},${snapshot.value.toFixed(2)},${snapshot.invested.toFixed(2)},${snapshot.grossProfit.toFixed(2)},${snapshot.tax.toFixed(2)},${snapshot.netProfit.toFixed(2)}`
+            )
+        })
+
+        fs.writeFileSync(file, rows.join("\n"))
+    }
+
+    export function printTextChart(sim: SimulationResult, useNetProfit: boolean = false) {
+            if (!sim.yearlySnapshots || sim.yearlySnapshots.length === 0) {
+                console.log("Nu exista date pentru grafic.");
+                return;
+            }
+
+            const snapshots = sim.yearlySnapshots;
+            const maxValue = Math.max(...snapshots.map(s => s.value));
+            const barLength = 40;
+
+            console.log("=".repeat(80));
+            console.log("EVOLUTIE ANUALA - GRAFIC BARE");
+            console.log("=".repeat(80));
+            console.log("Legenda: | Valoare  + Profit  - Taxe  * Investit");
+            console.log("-".repeat(80));
+
+            snapshots.forEach(snapshot => {
+                const profit = useNetProfit ? snapshot.netProfit : snapshot.grossProfit;
+
+                //symbols/cat
+                const valueSymbols = Math.round((snapshot.value / maxValue) * barLength);
+                const profitSymbols = Math.round((Math.abs(profit) / maxValue) * barLength);
+                const taxSymbols = Math.round((snapshot.tax / maxValue) * barLength);
+                const investedSymbols = Math.round((snapshot.invested / maxValue) * barLength);
+
+                let barLine = "";
+                for (let i = 0; i < barLength; i++) {
+                    if (i < valueSymbols) {
+                        barLine += "|";
+                    } else if (i < valueSymbols + profitSymbols && profit > 0) {
+                        barLine += "+";
+                    } else if (i < valueSymbols + profitSymbols + taxSymbols && snapshot.tax > 0) {
+                        barLine += "-";
+                    } else if (i < valueSymbols + profitSymbols + taxSymbols + investedSymbols) {
+                        barLine += "*";
+                    } else {
+                        barLine += " ";
+                    }
+                }
+
+                const profitType = useNetProfit ? "net" : "brut";
+                console.log(`An ${snapshot.year}: ${barLine}  ${snapshot.value.toFixed(0).padStart(8)} RON (profit ${profitType}: ${profit.toFixed(0)} RON)`);
+            });
+
+            console.log("-".repeat(80));
+            console.log(`Total: Valoare ${sim.finalValue.toFixed(0)} RON | Investit ${sim.invested.toFixed(0)} RON | Profit ${sim.netProfit.toFixed(0)} RON | ROI ${(sim.roi * 100).toFixed(1)}%`);
+            console.log("=".repeat(80));
+
+    }
+
+
