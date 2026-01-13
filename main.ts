@@ -103,7 +103,7 @@ const params: InvestmentParams = {
     inflation: Number(getArgs("--inflation") || 0),
     taxRate: getArgs("--taxes") ? Number(getArgs("--taxes")) : undefined
 }
-assertNumber("Suma initiala (--initial)", params.initial);
+assertNumber("Suma initiala (--initial)", params.initial,false);
 assertNumber("Rata anuala (--rate)", params.annualRate);
 assertNumber("Anii (--years)", params.years, false);
 assertNumber("Contributia lunara (--monthly)", params.monthlyContribution);
