@@ -118,35 +118,40 @@ npm test
 
 
 -------------------------------------------------------
-Simulare Investitie - 10 ani
-Parametri:
-Suma initiala: 10,000 RON
-Rata dobanda anuala: 8.0%
-Contributie lunara: 500 RON
-Perioada: 10 ani (120 luni)
-Inflatie anuala: 3.0%
-Taxe pe profit: 10.0%
-Grafic: profit brut
-Rezultate:
-Suma totala investita: 70,000 RON
-Profit brut (dupa dobanda si / sau inflatie): 13,079.117 RON
-Taxe aplicate (10.0%): -1,307.912 RON
-Valoare finala: 81,771.206 RON
-Profit total: 13,079.117 RON
-ROI: 16.8%
-Dobanda castigata: 11,771.206 RON
-Punct break-even: anul 1 (luna 1)
-Evolutie pe ani:
-An 1: 16603 RON (+542 dobanda)
-An 2: 23526 RON (+1373 dobanda)
-An 3: 30785 RON (+2507 dobanda)
-An 4: 38397 RON (+3957 dobanda)
-An 5: 46378 RON (+5740 dobanda)
-An 6: 54747 RON (+7872 dobanda)
-An 7: 63522 RON (+10369 dobanda)
-An 8: 72722 RON (+13250 dobanda)
-An 9: 82370 RON (+16533 dobanda)
-An 10: 92486 RON (+20237 dobanda)
+# Simulare Investiție - 10 ani
+
+## Parametri:
+- Suma inițială: 10,000 RON
+- Rată dobândă anuală: 8.0%
+- Contribuție lunară: 500 RON
+- Perioadă: 10 ani (120 luni)
+- Inflație anuală: 3.0%
+- Taxe pe profit: 10.0%
+- Grafic: profit brut
+
+## Rezultate:
+- Suma totală investită: 70,000 RON
+- Profit brut (după dobândă și inflație): 13,079.117 RON
+- Taxe aplicate (10.0%): -1,307.912 RON
+- Valoare finală: 81,771.206 RON
+- Profit total: 13,079.117 RON
+- ROI: 16.8%
+- Dobândă câștigată: 11,771.206 RON
+- Punct break-even: anul 1 (luna 1)
+
+## Evoluție pe ani:
+| An   | Valoare       | Dobândă       |
+|------|---------------|---------------|
+| 1    | 16603 RON     | +542          |
+| 2    | 23526 RON     | +1373         |
+| 3    | 30785 RON     | +2507         |
+| 4    | 38397 RON     | +3957         |
+| 5    | 46378 RON     | +5740         |
+| 6    | 54747 RON     | +7872         |
+| 7    | 63522 RON     | +10369        |
+| 8    | 72722 RON     | +13250        |
+| 9    | 82370 RON     | +16533        |
+| 10   | 92486 RON     | +20237        |
 ================================================================================
 EVOLUTIE ANUALA - GRAFIC BARE
 ================================================================================
