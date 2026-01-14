@@ -16,12 +16,12 @@ if (isDocker) {
 //end
 const args = process.argv.slice(2)
 //meniu
-function help(flag: boolean = false) {
+function help(flag: boolean =true) {
     console.log("-------------------------------------------------------");
     console.log("   SIMULATOR INVESTITII          ");
     console.log("-------------------------------------------------------");
 
-    if (flag) return;
+    if (!flag) return;
 
     // Daca a cerut help sau nu a pus argumente, afisam tot meniul
     console.log("UTILIZARE:");
@@ -51,9 +51,9 @@ function help(flag: boolean = false) {
 
 
 if (args.length > 0 && !args.includes("--help")) {
-    help(true);
-} else {
     help(false);
+} else {
+    help(true);
     if (args.length === 0 || args.includes("--help")) {
         process.exit(0);
     }
