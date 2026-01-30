@@ -1,16 +1,16 @@
 export interface  InvestmentParams{
-    initial: number;
-    annualRate: number;
-    years: number;
-    monthlyContribution: number;
+    initial: number;//`initial investment amount
+    annualRate: number;//`expected annual rate of return (as a decimal, e.g., 0.07 for 7%)
+    years: number;//`investment duration in years
+    monthlyContribution: number; 
     inflation: number;
-    taxRate?:number;
+    taxRate?:number;//optional tax rate on profits (as a decimal, e.g., 0.15 for 15%)
 
 }
 export interface SimulationResult{
     history: number[]
-    invested: number
-    finalValue: number
+    invested: number    // total amount invested over the period
+    finalValue: number // final value of the investment
     grossProfit : number
     netProfit:number
     tax: number
@@ -20,7 +20,7 @@ export interface SimulationResult{
     yearlySnapshots?: YearSnapshot[]
 
 }
-export interface YearSnapshot {
+export interface YearSnapshot {// Represents a snapshot of the investment at the end of a year
     year: number
     value: number
     invested: number
@@ -28,7 +28,7 @@ export interface YearSnapshot {
     tax: number
     netProfit: number
 }
-export interface MonteCarloResult {
+export interface MonteCarloResult {     // Represents the result of a Monte Carlo simulation
     min: number;
     max: number;
     avg: number;
